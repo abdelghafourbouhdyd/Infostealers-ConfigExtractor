@@ -9,7 +9,7 @@ import pefile
 log = logging.getLogger(__name__)
 
 DESCRIPTION = "Remus stealer config extractor"
-AUTHOR = "local (CAPE task 65)"
+AUTHOR = "abdelghafour bouhdyd"
 
 # lea rcx,[rip+state]; lea rdx,[rip+key]; lea r8,[rip+nonce]; xor r9d,r9d; jmp/call chacha_init
 RE_INIT = re.compile(rb"\x48\x8D\x0D(.{4})\x48\x8D\x15(.{4})\x4C\x8D\x05(.{4})\x45\x31\xC9[\xE8\xE9]", re.S)
