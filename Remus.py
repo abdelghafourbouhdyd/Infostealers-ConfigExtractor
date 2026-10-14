@@ -1,5 +1,7 @@
-
-import logging
+# Usage: python3 Remus.py <dump> [<dump> ...]
+  #   <dump> = unpacked Remus payload (MZ/PE dump, e.g. from CAPE, x64dbg, pe-sieve),
+  #            a text dump of decrypted strings, or a folder of such dumps.
+  #   Packed samples and raw shellcode/heap regions will not work - unpack first.
 import re
 import struct
 import sys
