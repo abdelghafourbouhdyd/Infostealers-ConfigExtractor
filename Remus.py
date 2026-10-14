@@ -2,6 +2,7 @@
 import logging
 import re
 import struct
+import sys
 from contextlib import suppress
 
 import pefile
@@ -10,7 +11,6 @@ log = logging.getLogger(__name__)
 
 DESCRIPTION = "Remus stealer config extractor"
 AUTHOR = "abdelghafour bouhdyd"
-
 # lea rcx,[rip+state]; lea rdx,[rip+key]; lea r8,[rip+nonce]; xor r9d,r9d; jmp/call chacha_init
 RE_INIT = re.compile(rb"\x48\x8D\x0D(.{4})\x48\x8D\x15(.{4})\x4C\x8D\x05(.{4})\x45\x31\xC9[\xE8\xE9]", re.S)
 # 65/68: lea rdx,[rip+table]; shl rax,6; add rdx,rax; lea rcx,[rip+state]; lea r8,[rsp+X]; call decrypt
@@ -160,8 +160,41 @@ def extract_config(data):
 
 
 if __name__ == "__main__":
+    import argparse
     import json
-    import sys
+    import os
 
-    with open(sys.argv[1], "rb") as f:
-        print(json.dumps(extract_config(f.read()), indent=4))
+    ap = argparse.ArgumentParser(description=DESCRIPTION)
+    ap.add_argument("paths", nargs="+", help="unpacked Remus PE / string dump, or a directory of dumps (e.g. CAPE's analyses/<id>/CAPE)")
+    ap.add_argument("-a", "--all", action="store_true", help="also print files with no config")
+    ap.add_argument("-d", "--debug", action="store_true", help="show the exception instead of returning null")
+    args = ap.parse_args()
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+
+    files = []
+    for p in args.paths:
+        if os.path.isdir(p):
+            files += sorted(os.path.join(p, f) for f in os.listdir(p) if os.path.isfile(os.path.join(p, f)))
+        else:
+            files.append(p)
+
+    found = False
+    for path in files:
+        try:
+            with open(path, "rb") as f:
+                data = f.read()
+        except OSError as e:
+            print(f"[!] {path}: {e.strerror}", file=sys.stderr)
+            continue
+        if args.debug:
+            cfg = extract_static(data) if data[:2] == b"MZ" else extract_strings(data)
+        else:
+            cfg = extract_config(data)
+        if cfg or args.all:
+            found = found or bool(cfg)
+            print(f"== {path}")
+            print(json.dumps(cfg, indent=4))
+
+    sys.exit(0 if found else 1)
