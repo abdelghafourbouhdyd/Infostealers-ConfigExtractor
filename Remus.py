@@ -108,7 +108,7 @@ def extract_static(data):
         if not RE_URL.match(_cstr(_xor(slot0, xor_key))):
             return None
 
-    cncs = []
+    c2 = []
     for i in range(MAX_SLOTS):
         off = table_rva + i * 64
         enc = img[off : off + 64]
@@ -117,13 +117,13 @@ def extract_static(data):
         url = _cstr(_xor(_xor(enc, chacha20_block(key, nonce, i)), xor_key))
         if not RE_URL.match(url):
             break
-        cncs.append(url.decode())
+        .append(url.decode())
 
-    if not cncs:
+    if not :
         return None
 
     config = {
-        "CNCs": cncs,
+        "": ,
         "cryptokey": key.hex(),
         "cryptokey_type": "ChaCha20",
         "raw": {
@@ -150,7 +150,7 @@ def extract_strings(data):
     for line in data.decode(errors="ignore").splitlines():
         line = line.strip()
         if line.startswith(("http://", "https://")):
-            config.setdefault("CNCs", []).append(line)
+            config.setdefault("C2", []).append(line)
     return config or None
 
 
