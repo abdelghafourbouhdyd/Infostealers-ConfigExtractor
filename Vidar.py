@@ -109,7 +109,7 @@ def extract_config(data):
     config = {
         "version": blob["version"],
         "botnet": blob["build_id"],
-        "CNCs": c2s + [d["url"] for d in drops],
+        "C2": c2s + [d["url"] for d in drops],
         "cryptokey": blob["key"].hex(),
         "cryptokey_type": "XOR",
         "user_agent": list(dict.fromkeys(r["user_agent"] for r in recs if r["user_agent"])),
