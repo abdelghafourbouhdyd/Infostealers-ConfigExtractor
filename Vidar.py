@@ -5,6 +5,9 @@ Author: abdelghafour bouhdyd
 
 Works on an unpacked Vidar payload: a PE dump (file or memory layout) from CAPE, x64dbg,
 pe-sieve and similar tools, or a raw memory region holding the config.
+
+python3 Vidar.py -r payload.bin                  + decode the live C2 from Steam/Telegram
+
 """
 
 import argparse
